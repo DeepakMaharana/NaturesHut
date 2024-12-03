@@ -1,0 +1,65 @@
+.shimer-div {
+  padding: 10px;
+}
+.shimer-div > .slider-div {
+  width: 100%;
+  height: 500px;
+  margin-bottom: 10px;
+  background-color: #DFE1E3;
+}
+
+.shimer-div > .filter-div {
+  width: 100%;
+  height: 50px;
+  background-color: #DFE1E3;
+}
+
+.shimer-div {
+  .card {
+    width: 280px;
+    height: 300px;
+    border: 1px solid #DFE1E3;
+    background-color: #DFE1E3;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .card > .card-img {
+    width: 100%;
+    height: 60%;
+  }
+
+  .card-img > img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .card-details {
+    padding: 10px;
+  }
+
+  .card-details h2 {
+    color: #6c3428;
+    text-align: center;
+  }
+
+  .card-details .location-details {
+    color: #dfa878;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #795436;
+    text-align: center;
+  }
+
+  .card-details .card-descp {
+    color: gray;
+    font-size: 14px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    margin-top: 10px;
+  }
+}

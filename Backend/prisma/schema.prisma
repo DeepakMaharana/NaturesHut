@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id              Int      @id @default(autoincrement())
+  firstName       String   @map("first_name")
+  lastName        String   @map("last_name")
+  email           String   @unique
+  password        String
+  phone           String   @unique
+  preferences     Preferences? // One-to-one relationship
+  isActive        Boolean  @default(true) @map("is_active")
+  emailVerified   Boolean  @default(false) @map("email_verified")
+  phoneVerified   Boolean  @default(false) @map("phone_verified")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
+
+  // Relations
+  address         Address? // One-to-one relationship
+  bookings        BookingHistory[] // One-to-many relationship to booking history
+}
+
+model Admin {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  password        String
+  role            AdminRole @default(admin)
+  canRead         Boolean  @default(true)  // Permission field
+  canWrite        Boolean  @default(false) // Permission field
+  canDelete       Boolean  @default(false) // Permission field
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
+}
+
+model Address {
+  id              Int      @id @default(autoincrement())
+  street          String?
+  city            String?
+  state           String?
+  postalCode      String? @map("postal_code")
+  country         String?
+  
+  // Relations
+  userId          Int      @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Preferences {
+  id              Int      @id @default(autoincrement())
+  preferredVillaType VillaType @default(standard)
+  newsletterSubscribed Boolean @default(true) @map("newsletter_subscribed")
+  
+  // Relations
+  userId          Int      @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BookingHistory {
+  id              Int      @id @default(autoincrement())
+  bookingDate     DateTime @map("booking_date")
+  status          BookingStatus @default(pending)
+  
+  // Relations
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookingId       Int
+  villaId         Int
+}
+
+enum UserRole {
+  customer
+  admin
+}
+
+enum AdminRole {
+  superadmin
+  admin
+  moderator
+}
+
+enum VillaType {
+  luxury
+  standard
+  budget
+}
+
+enum BookingStatus {
+  pending
+  completed
+  cancelled
+}
+
+
+
+model CampingRegistration {
+  id              Int       @id @default(autoincrement())
+  campName        String
+  campSiteName    String
+  region          String
+  country         String
+  lat             Float
+  lng             Float
+  pricePerPerson  Float
+  durationDays    Int
+  durationNights  Int
+  maxGroupSize    Int
+  availableSlots  Int
+  amenities       String[]  @default([]) // Array of strings (PostgreSQL supports this)
+  startDate       DateTime
+  endDate         DateTime
+  packingList     String[]  @default([]) // Array of strings
+  specialInstructions String?
+
+  // Relations
+  guides           Guide[] // One-to-many relation to Guide
+  participants     Participant[] // One-to-many relation to Participant
+  
+  createdAt       DateTime  @default(now())
+}
+
+model Guide {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String
+  experience      Int
+  campingRegistrationId Int  @relation(fields: [campingRegistrationId], references: [id], onDelete: Cascade)
+}
+
+model Participant {
+  id              Int       @id @default(autoincrement())
+  participantName String
+  age             Int
+  email           String
+  phone           String
+  emergencyContactName String
+  emergencyContactPhone String
+  campingRegistrationId Int  @relation(fields: [campingRegistrationId], references: [id], onDelete: Cascade)
+}
+
+model Trek {
+  id              Int       @id @default(autoincrement())
+  name            String
+  trailName       String
+  region          String
+  country         String
+  lat             Float
+  lng             Float
+  difficultyLevel DifficultyLevel
+  pricePerPerson  Float
+  durationDays    Int
+  durationNights  Int
+  description     String?
+  maxGroupSize    Int
+  availableSlots  Int
+  startDate       DateTime
+  endDate         DateTime
+  packingList     String[]  @default([])
+
+  // Relations
+  guides           Guide[] // One-to-many relation to Guide
+  participants     Participant[] // One-to-many relation to Participant
+  
+  createdAt       DateTime  @default(now())
+}
+
+model PropertySubmission {
+  id              Int       @id @default(autoincrement())
+  firstName       String
+  lastName        String
+  email           String
+  contactNumber   String
+  propertyLocation String
+  propertyType    PropertyType
+  rooms           Int?
+  heardFrom       String?
+  photosWebsiteLink String?
+  description     String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+}
+
+// Enum for Difficulty Levels in Trek
+enum DifficultyLevel {
+  Easy
+  Moderate
+  Challenging
+  Hard
+  Expert
+}
+
+// Enum for Property Types in PropertySubmission
+enum PropertyType {
+  villa
+  camp
+  trek
+}
